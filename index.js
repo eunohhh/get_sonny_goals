@@ -5,18 +5,7 @@ const getGoals = async () => {
     try {
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
-
-        // 추가적인 HTTP 헤더 설정
-        await page.setExtraHTTPHeaders({
-            "User-Agent":
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
-            Accept: "*/*",
-        });
-
         await page.goto("https://namu.wiki/w/%EC%86%90%ED%9D%A5%EB%AF%BC", { timeout: 60000 });
-
-        // 네트워크 활동 대기
-        await page.waitForResponse((response) => response.status() === 200);
 
         console.log(page);
 
@@ -24,13 +13,14 @@ const getGoals = async () => {
         const content = await page.content();
         console.log(content);
 
-        // 페이지가 완전히 로드될 때까지 대기
-        const selected = await page.waitForSelector("tbody", { timeout: 60000 });
+        // 필요한 데이터가 로드될 때까지 기다립니다.
+        const datas = await page.waitForSelector(".XJfLa7V4", { timeout: 60000 }); // 대기 시간을 60초로 설정
 
-        console.log(selected);
+        console.log(datas);
 
-        const goals = await page.evaluate(() => {
+        const goals = await datas.evaluate(() => {
             const goalElements = document.querySelectorAll("tbody tr td div.OlVG2zQe strong");
+            console.log(goalElements);
             const goalNumbers = Array.from(goalElements).map((element) => {
                 return parseInt(element.textContent.replace(/[^0-9]/g, ""), 10);
             });
@@ -54,3 +44,10 @@ const getGoals = async () => {
 };
 
 getGoals();
+
+// // 추가적인 HTTP 헤더 설정
+// await page.setExtraHTTPHeaders({
+//     "User-Agent":
+//         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
+//     Accept: "*/*",
+// });
