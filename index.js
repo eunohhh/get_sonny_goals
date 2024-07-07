@@ -8,10 +8,10 @@ const getGoals = async () => {
         await page.goto("https://namu.wiki/w/%EC%86%90%ED%9D%A5%EB%AF%BC");
 
         // 필요한 데이터가 로드될 때까지 기다립니다.
-        await page.waitForSelector("td > .OlVG2zQe");
+        await page.waitForSelector("tbody tr td div.OlVG2zQe strong", { timeout: 60000 }); // 대기 시간을 60초로 설정
 
         const goals = await page.evaluate(() => {
-            const goalElements = document.querySelectorAll("'td > .OlVG2zQe > strong");
+            const goalElements = document.querySelectorAll("tbody tr td div.OlVG2zQe strong");
             const goalNumbers = Array.from(goalElements).map((element) => {
                 return parseInt(element.textContent.replace(/[^0-9]/g, ""), 10);
             });
