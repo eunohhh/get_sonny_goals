@@ -1,0 +1,35 @@
+name: Get Son Heung-min Goals
+
+on:
+    schedule:
+        - cron: "0 */6 * * *" # 6시간마다 한 번씩 자동으로 워크플로우 실행
+    workflow_dispatch: {} # 수동으로 워크플로우 트리거
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: "20"
+
+            - name: Install dependencies
+              run: npm install
+
+            - name: Run getGoals script
+              run: node getGoals.js
+
+            - name: Commit and push changes
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  git config --global user.name "eunohhh"
+                  git config --global user.email "bdohhhhh@gmail.com"
+                  git add goals.json
+                  git commit -m "Update goals data" || echo "No changes to commit"
+                  git push origin main || echo "No changes to push"

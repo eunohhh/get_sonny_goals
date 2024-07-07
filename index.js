@@ -1,58 +1,26 @@
-// index.js
-
 const axios = require("axios");
-const xml2js = require("xml2js");
-const md = require("markdown-it")({
-    html: true,
-});
+const cheerio = require("cheerio");
 const fs = require("fs");
-const path = require("path");
-const slugify = require("slugify");
 
-const RSS_URL = "https://ifelseif.tistory.com/rss";
-
-(async () => {
+const getGoals = async () => {
     try {
-        const response = await axios.get(RSS_URL, {
-            headers: {
-                "User-Agent":
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-                Accept: "*/*",
-            },
-        });
+        const response = await axios.get("https://namu.wiki/w/%EC%86%90%ED%9D%A5%EB%AF%BC");
+        const html = response.data;
+        const $ = cheerio.load(html);
+        const goalElement = $("div.OlVG2zQe strong[data-v-4d6812b6]").first();
+        const goals = goalElement.text().replace(/[^0-9]/g, "");
 
-        const feed = await xml2js.parseStringPromise(response.data);
-        const items = feed.rss.channel[0].item;
-        console.log(`Fetched ${items.length} items from RSS feed.`);
+        const data = {
+            player: "Son Heung-min",
+            goals: goals,
+            timestamp: new Date().toISOString(),
+        };
 
-        if (!fs.existsSync("posts")) {
-            fs.mkdirSync("posts");
-            console.log("Created posts directory.");
-        } else {
-            console.log("Posts directory already exists.");
-        }
-
-        items.forEach((item) => {
-            const title = item.title[0];
-            const content = item.description[0];
-            const category = item.category ? item.category[0] : "uncategorized";
-            const categorySlug = slugify(category, { remove: /[*+~.()'"!:@]/g, lower: true });
-            const categoryPath = path.join("posts", categorySlug);
-
-            if (!fs.existsSync(categoryPath)) {
-                fs.mkdirSync(categoryPath, { recursive: true });
-                console.log(`Created category directory: ${categoryPath}`);
-            }
-
-            console.log(`Processing item: ${title}`);
-            const markdownContent = md.render(content);
-            const fileName = path.join(categoryPath, `${slugify(title, { remove: /[*+~.()'"!:@]/g, lower: true })}.md`);
-            fs.writeFileSync(fileName, markdownContent, "utf8");
-            console.log(`Created file: ${fileName}`);
-        });
-
-        console.log("RSS feed converted to markdown files.");
+        fs.writeFileSync("goals.json", JSON.stringify(data, null, 2));
+        console.log("골 수 데이터를 저장했습니다: ", data);
     } catch (error) {
-        console.error("Failed to fetch and convert RSS feed:", error);
+        console.error("에러 발생: ", error);
     }
-})();
+};
+
+getGoals();
