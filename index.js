@@ -7,8 +7,10 @@ const getGoals = async () => {
         const page = await browser.newPage();
         await page.goto("https://namu.wiki/w/%EC%86%90%ED%9D%A5%EB%AF%BC", { timeout: 60000 });
 
+        console.log(page);
+
         // 필요한 데이터가 로드될 때까지 기다립니다.
-        const datas = await page.waitForSelector("tbody", { timeout: 60000 }); // 대기 시간을 60초로 설정
+        const datas = await page.waitForSelector(".XJfLa7V4", { timeout: 60000 }); // 대기 시간을 60초로 설정
 
         console.log(datas);
 
