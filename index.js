@@ -1,14 +1,11 @@
-const puppeteer = require("puppeteer-extra");
-const StealthPlugin = require("puppeteer-extra-plugin-stealth");
+const puppeteer = require("puppeteer");
 const fs = require("fs");
-
-// Stealth 플러그인을 사용하도록 설정
-puppeteer.use(StealthPlugin());
 
 const getGoals = async () => {
     try {
         const browser = await puppeteer.launch({ headless: true });
         const page = await browser.newPage();
+        await page.goto("https://namu.wiki/w/%EC%86%90%ED%9D%A5%EB%AF%BC", { timeout: 60000 });
 
         // 추가적인 HTTP 헤더 설정
         await page.setExtraHTTPHeaders({
