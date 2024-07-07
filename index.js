@@ -5,15 +5,14 @@ const getGoals = async () => {
     try {
         const browser = await puppeteer.launch({ headless: true });
         const page = await browser.newPage();
-        await page.goto("https://namu.wiki/w/%EC%86%90%ED%9D%A5%EB%AF%BC", { timeout: 60000 });
 
         // 추가적인 HTTP 헤더 설정
         await page.setExtraHTTPHeaders({
             "User-Agent":
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
+            Accept: "*/*",
         });
 
-        // 페이지 이동 및 대기
         await page.goto("https://namu.wiki/w/%EC%86%90%ED%9D%A5%EB%AF%BC", { timeout: 60000 });
 
         // 네트워크 활동 대기
