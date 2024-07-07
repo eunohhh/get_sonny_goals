@@ -8,11 +8,14 @@ const getGoals = async () => {
         await page.goto("https://namu.wiki/w/%EC%86%90%ED%9D%A5%EB%AF%BC");
 
         // 필요한 데이터가 로드될 때까지 기다립니다.
-        await page.waitForSelector("div.OlVG2zQe strong[data-v-4d6812b6]");
+        await page.waitForSelector(".OlVG2zQe strong");
 
         const goals = await page.evaluate(() => {
-            const goalElement = document.querySelector("div.OlVG2zQe strong[data-v-4d6812b6]");
-            return goalElement.textContent.replace(/[^0-9]/g, "");
+            const goalElements = document.querySelectorAll(".OlVG2zQe strong");
+            const goalNumbers = Array.from(goalElements).map((element) => {
+                return parseInt(element.textContent.replace(/[^0-9]/g, ""), 10);
+            });
+            return Math.max(...goalNumbers);
         });
 
         const data = {
