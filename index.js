@@ -20,8 +20,15 @@ const getGoals = async () => {
         // 페이지 이동 및 대기
         await page.goto("https://namu.wiki/w/%EC%86%90%ED%9D%A5%EB%AF%BC", { timeout: 60000 });
 
+        // 네트워크 활동 대기
+        await page.waitForResponse((response) => response.status() === 200);
+
+        // HTML 콘텐츠 출력
+        const content = await page.content();
+        console.log(content);
+
         // 페이지가 완전히 로드될 때까지 대기
-        const selected = await page.waitForSelector("tbody tr td div.OlVG2zQe strong", { timeout: 60000 });
+        const selected = await page.waitForSelector("tbody", { timeout: 60000 });
 
         console.log(selected);
 
