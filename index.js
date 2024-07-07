@@ -31,6 +31,9 @@ const getGoals = async () => {
             timeout: 60000,
         });
 
+        // Set screen size
+        await page.setViewport({ width: 1920, height: 1080 });
+
         // 페이지가 완전히 로드될 때까지 대기
         await page.waitForSelector(".OlVG2zQe strong", { timeout: 60000 });
 
