@@ -14,6 +14,9 @@ const getGoals = async () => {
         });
         await page.goto("https://namu.wiki/w/%EC%86%90%ED%9D%A5%EB%AF%BC", { timeout: 60000 });
 
+        // 네트워크 활동 대기
+        await page.waitForResponse((response) => response.status() === 200);
+
         // HTML 콘텐츠 출력
         const content = await page.content();
         console.log(content);
