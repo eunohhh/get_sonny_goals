@@ -27,10 +27,12 @@ const getGoals = async () => {
         console.log(datas);
 
         const goals = await datas.evaluate(() => {
-            const goalElements = document.querySelectorAll("tbody tr td div.OlVG2zQe strong");
+            const goalElements = document.querySelectorAll(".XJfLa7V4 > tbody tr");
             console.log(goalElements);
-            const goalNumbers = Array.from(goalElements).map((element) => {
-                return parseInt(element.textContent.replace(/[^0-9]/g, ""), 10);
+            const goalNumbers = Array.from(goalElements).map((element, idx) => {
+                if (idx === 15) {
+                    return parseInt(element.children[1].children[0].children[0].textContent.replace(/[^0-9]/g, ""), 10);
+                }
             });
             return Math.max(...goalNumbers);
         });
