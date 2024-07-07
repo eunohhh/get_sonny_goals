@@ -4,7 +4,7 @@ const UserAgent = require("user-agents"); // ^1.0.958
 
 const getGoals = async () => {
     try {
-        const browser = await puppeteer.launch();
+        const browser = await puppeteer.launch({ headless: false });
         const page = await browser.newPage();
         const userAgent = new UserAgent({ deviceCategory: "desktop" });
         await page.setUserAgent(userAgent.random().toString());
@@ -15,9 +15,12 @@ const getGoals = async () => {
             Accept: "*/*",
         });
 
-        await page.waitForResponse((response) => response.status() === 200, { timeout: 60000 });
+        // await page.waitForResponse((response) => response.status() === 200, { timeout: 60000 });
 
         await page.goto("https://namu.wiki/w/%EC%86%90%ED%9D%A5%EB%AF%BC", { waitUntil: "domcontentloaded" });
+
+        // Set screen size
+        await page.setViewport({ width: 1920, height: 1080 });
 
         // 네트워크 활동 대기
 
