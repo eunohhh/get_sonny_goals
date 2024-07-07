@@ -1,5 +1,6 @@
 const puppeteer = require("puppeteer");
 const fs = require("fs");
+const UserAgent = require("user-agents"); // ^1.0.958
 
 const getGoals = async () => {
     try {
