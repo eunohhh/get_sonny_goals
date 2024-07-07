@@ -18,10 +18,10 @@ const getGoals = async () => {
         // 페이지 스크린샷 찍기 (디버깅용)
         await page.screenshot({ path: "page.png", fullPage: true });
 
-        console.log(datas);
-
         // 요소 대기
-        await page.waitForSelector("tbody tr td div.OlVG2zQe strong", { timeout: 60000 });
+        const selected = await page.waitForSelector("tbody tr td div.OlVG2zQe strong", { timeout: 60000 });
+
+        console.log(selected);
 
         // 요소 평가
         const goals = await page.evaluate(() => {
