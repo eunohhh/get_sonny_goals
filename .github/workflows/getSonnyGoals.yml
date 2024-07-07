@@ -22,7 +22,7 @@ jobs:
               run: npm install
 
             - name: Run getGoals script
-              run: node getGoals.js
+              run: node index.js
 
             - name: Commit and push changes
               env:
