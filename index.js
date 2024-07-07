@@ -1,45 +1,43 @@
 const puppeteer = require("puppeteer");
 const fs = require("fs");
-const UserAgent = require("user-agents"); // ^1.0.958
+// const UserAgent = require("user-agents"); // ^1.0.958
 
 const getGoals = async () => {
     try {
-        const browser = await puppeteer.launch({ headless: false });
+        const browser = await puppeteer.launch({
+            headless: true,
+            args: [
+                "--no-sandbox",
+                "--disable-setuid-sandbox",
+                "--disable-dev-shm-usage",
+                "--disable-accelerated-2d-canvas",
+                "--no-first-run",
+                "--no-zygote",
+                "--single-process", // <- 이것이 없으면 Docker에서 문제가 발생할 수 있습니다.
+                "--disable-gpu",
+            ],
+        });
         const page = await browser.newPage();
-        const userAgent = new UserAgent({ deviceCategory: "desktop" });
-        await page.setUserAgent(userAgent.random().toString());
+
         // 추가적인 HTTP 헤더 설정
         await page.setExtraHTTPHeaders({
             "User-Agent":
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
-            Accept: "*/*",
         });
 
-        // await page.waitForResponse((response) => response.status() === 200, { timeout: 60000 });
+        // 페이지 이동 및 대기
+        await page.goto("https://namu.wiki/w/%EC%86%90%ED%9D%A5%EB%AF%BC", {
+            waitUntil: "domcontentloaded",
+            timeout: 60000,
+        });
 
-        await page.goto("https://namu.wiki/w/%EC%86%90%ED%9D%A5%EB%AF%BC", { waitUntil: "domcontentloaded" });
+        // 페이지가 완전히 로드될 때까지 대기
+        await page.waitForSelector(".OlVG2zQe strong", { timeout: 60000 });
 
-        // Set screen size
-        await page.setViewport({ width: 1920, height: 1080 });
-
-        // 네트워크 활동 대기
-
-        // HTML 콘텐츠 출력
-        const content = await page.content();
-        console.log(content);
-
-        // 필요한 데이터가 로드될 때까지 기다립니다.
-        const datas = await page.waitForSelector(".XJfLa7V4", { timeout: 60000 }); // 대기 시간을 60초로 설정
-
-        console.log(datas);
-
-        const goals = await datas.evaluate(() => {
-            const goalElements = document.querySelectorAll(".XJfLa7V4 > tbody tr");
-            console.log(goalElements);
-            const goalNumbers = Array.from(goalElements).map((element, idx) => {
-                if (idx === 15) {
-                    return parseInt(element.children[1].children[0].children[0].textContent.replace(/[^0-9]/g, ""), 10);
-                }
+        const goals = await page.evaluate(() => {
+            const goalElements = document.querySelectorAll(".OlVG2zQe strong");
+            const goalNumbers = Array.from(goalElements).map((element) => {
+                return parseInt(element.textContent.replace(/[^0-9]/g, ""), 10);
             });
             return Math.max(...goalNumbers);
         });
