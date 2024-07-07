@@ -3,7 +3,7 @@ const fs = require("fs");
 
 const getGoals = async () => {
     try {
-        const browser = await puppeteer.launch({ headless: true });
+        const browser = await puppeteer.launch();
         const page = await browser.newPage();
 
         // 추가적인 HTTP 헤더 설정
