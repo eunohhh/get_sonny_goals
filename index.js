@@ -5,18 +5,27 @@ const getGoals = async () => {
     try {
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
+        // 페이지 이동 및 대기
         await page.goto("https://namu.wiki/w/%EC%86%90%ED%9D%A5%EB%AF%BC", { timeout: 60000 });
 
-        console.log(page);
+        // 네트워크 활동 대기
+        await page.waitForResponse((response) => response.status() === 200);
 
-        // 필요한 데이터가 로드될 때까지 기다립니다.
-        const datas = await page.waitForSelector(".XJfLa7V4", { timeout: 60000 }); // 대기 시간을 60초로 설정
+        // HTML 콘텐츠 출력
+        const content = await page.content();
+        console.log(content);
+
+        // 페이지 스크린샷 찍기 (디버깅용)
+        await page.screenshot({ path: "page.png", fullPage: true });
 
         console.log(datas);
 
-        const goals = await datas.evaluate(() => {
+        // 요소 대기
+        await page.waitForSelector("tbody tr td div.OlVG2zQe strong", { timeout: 60000 });
+
+        // 요소 평가
+        const goals = await page.evaluate(() => {
             const goalElements = document.querySelectorAll("tbody tr td div.OlVG2zQe strong");
-            console.log(goalElements);
             const goalNumbers = Array.from(goalElements).map((element) => {
                 return parseInt(element.textContent.replace(/[^0-9]/g, ""), 10);
             });
