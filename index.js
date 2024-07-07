@@ -8,9 +8,11 @@ const getGoals = async () => {
         await page.goto("https://namu.wiki/w/%EC%86%90%ED%9D%A5%EB%AF%BC");
 
         // 필요한 데이터가 로드될 때까지 기다립니다.
-        await page.waitForSelector("[data-name*='v']", { timeout: 60000 }); // 대기 시간을 60초로 설정
+        const datas = await page.waitForSelector("[data-name*='v']", { timeout: 60000 }); // 대기 시간을 60초로 설정
 
-        const goals = await page.evaluate(() => {
+        console.log(datas);
+
+        const goals = await datas.evaluate(() => {
             const goalElements = document.querySelectorAll("[data-name*='v']");
             console.log(goalElements);
             const goalNumbers = Array.from(goalElements).map((element) => {
