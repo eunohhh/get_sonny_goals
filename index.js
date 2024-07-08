@@ -1,7 +1,12 @@
-const puppeteer = require("puppeteer");
+// const puppeteer = require("puppeteer");
+const puppeteer = require("puppeteer-extra");
+const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 const fs = require("fs");
 // const UserAgent = require("user-agents"); // ^1.0.958
 const cheerio = require("cheerio");
+
+// Stealth 플러그인을 사용하도록 설정
+puppeteer.use(StealthPlugin());
 
 const getGoals = async () => {
     try {
