@@ -128,15 +128,14 @@ const getGoals = async () => {
             timestamp: new Date().toISOString(),
         };
 
-        const categoryPath = path.join("goals", categorySlug);
-
+        // 'goals' 폴더 생성 및 데이터 파일 저장
+        const categoryPath = path.join("goals");
         if (!fs.existsSync(categoryPath)) {
             fs.mkdirSync(categoryPath, { recursive: true });
             console.log(`Created category directory: ${categoryPath}`);
         }
         const fileName = path.join(categoryPath, "goals.json");
-        // fs.writeFileSync("goals.json", JSON.stringify(data, null, 2));
-        fs.writeFileSync(fileName, JSON.stringify(data));
+        fs.writeFileSync(fileName, JSON.stringify(data, null, 2));
 
         console.log("골 수 데이터를 저장했습니다: ", data);
 

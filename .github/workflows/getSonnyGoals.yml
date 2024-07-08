@@ -33,6 +33,6 @@ jobs:
               run: |
                   git config --global user.name "eunohhh"
                   git config --global user.email "bdohhhhh@gmail.com"
-                  git add -A goals/ || echo "No files to add"
+                  git add goals/goals.json
                   git commit -m "Update goals data" || echo "No changes to commit"
                   git push origin main || echo "No changes to push"
