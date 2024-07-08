@@ -96,7 +96,7 @@ const getGoals = async () => {
 
         const content = await page.content();
 
-        console.log(content);
+        // console.log(content);
         // $에 cheerio를 로드한다.
         const $ = cheerio.load(content);
 
