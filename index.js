@@ -1,21 +1,12 @@
 const puppeteer = require("puppeteer");
 const fs = require("fs");
 // const UserAgent = require("user-agents"); // ^1.0.958
+const cheerio = require("cheerio");
 
 const getGoals = async () => {
     try {
         const browser = await puppeteer.launch({
-            headless: true,
-            args: [
-                "--no-sandbox",
-                "--disable-setuid-sandbox",
-                "--disable-dev-shm-usage",
-                "--disable-accelerated-2d-canvas",
-                "--no-first-run",
-                "--no-zygote",
-                "--single-process", // <- 이것이 없으면 Docker에서 문제가 발생할 수 있습니다.
-                "--disable-gpu",
-            ],
+            headless: false,
         });
         const page = await browser.newPage();
 
@@ -25,25 +16,38 @@ const getGoals = async () => {
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
         });
 
+        // Set screen size
+        await page.setViewport({ width: 1920, height: 1080 });
+
         // 페이지 이동 및 대기
         await page.goto("https://namu.wiki/w/%EC%86%90%ED%9D%A5%EB%AF%BC", {
             waitUntil: "domcontentloaded",
             timeout: 60000,
         });
 
-        // Set screen size
-        await page.setViewport({ width: 1920, height: 1080 });
+        const content = await page.content();
+        // $에 cheerio를 로드한다.
+        const $ = cheerio.load(content);
 
-        // 페이지가 완전히 로드될 때까지 대기
-        await page.waitForSelector(".OlVG2zQe strong", { timeout: 60000 });
+        const goals = $(
+            "#app > div > div._5DRQ6Phv.a5z6UHjy > article > div.aXXRCC8v > article > div.CVYBZp8c > div > div:nth-child(2) > div.LKVNbZff > div.hh9Bcdpt > div.Bk4No22F.SuHD5-eo > table > tbody > tr:nth-child(16) > td:nth-child(2) > div > strong"
+        ).text();
 
-        const goals = await page.evaluate(() => {
-            const goalElements = document.querySelectorAll(".OlVG2zQe strong");
-            const goalNumbers = Array.from(goalElements).map((element) => {
-                return parseInt(element.textContent.replace(/[^0-9]/g, ""), 10);
-            });
-            return Math.max(...goalNumbers);
-        });
+        // // 페이지가 완전히 로드될 때까지 대기
+        // await page.waitForSelector(
+        //     "#app > div > div._5DRQ6Phv.a5z6UHjy > article > div.aXXRCC8v > article > div.CVYBZp8c > div > div:nth-child(2) > div.LKVNbZff > div.hh9Bcdpt > div.Bk4No22F.SuHD5-eo > table > tbody > tr:nth-child(16) > td:nth-child(2) > div > strong",
+        //     { timeout: 60000 }
+        // );
+
+        // const goals = await page.evaluate(() => {
+        //     const goalElements = document.querySelectorAll(
+        //         "#app > div > div._5DRQ6Phv.a5z6UHjy > article > div.aXXRCC8v > article > div.CVYBZp8c > div > div:nth-child(2) > div.LKVNbZff > div.hh9Bcdpt > div.Bk4No22F.SuHD5-eo > table > tbody > tr:nth-child(16) > td:nth-child(2) > div > strong"
+        //     );
+        //     const goalNumbers = Array.from(goalElements).map((element) => {
+        //         return parseInt(element.textContent.replace(/[^0-9]/g, ""), 10);
+        //     });
+        //     return Math.max(...goalNumbers);
+        // });
 
         const data = {
             player: "Son Heung-min",
