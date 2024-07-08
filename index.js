@@ -124,7 +124,7 @@ const getGoals = async () => {
 
         const data = {
             player: "Son Heung-min",
-            goals: goals.text(),
+            goals: goals.text().replace(/\n/g, ""),
             timestamp: new Date().toISOString(),
         };
 
