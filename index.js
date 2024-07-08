@@ -29,7 +29,9 @@ const getGoals = async () => {
 
         const goals = $(
             "#app > div > div._5DRQ6Phv.a5z6UHjy > article > div.aXXRCC8v > article > div.CVYBZp8c > div > div:nth-child(2) > div.LKVNbZff > div.hh9Bcdpt > div.Bk4No22F.SuHD5-eo > table > tbody > tr:nth-child(16) > td:nth-child(2) > div > strong"
-        ).text();
+        );
+
+        console.log(goals, goals.text());
 
         // // 페이지가 완전히 로드될 때까지 대기
         // await page.waitForSelector(
@@ -49,11 +51,13 @@ const getGoals = async () => {
 
         const data = {
             player: "Son Heung-min",
-            goals: goals,
+            goals: goals.text(),
             timestamp: new Date().toISOString(),
         };
 
-        fs.writeFileSync("goals.json", JSON.stringify(data, null, 2));
+        // fs.writeFileSync("goals.json", JSON.stringify(data, null, 2));
+        fs.writeFileSync("goals.json", JSON.stringify(data));
+
         console.log("골 수 데이터를 저장했습니다: ", data);
 
         await browser.close();
