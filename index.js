@@ -14,8 +14,8 @@ const getGoals = async () => {
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
         });
 
-        // // Set screen size
-        // await page.setViewport({ width: 1920, height: 1080 });
+        // Set screen size
+        await page.setViewport({ width: 1920, height: 1080 });
 
         // 페이지 이동 및 대기
         await page.goto("https://namu.wiki/w/%EC%86%90%ED%9D%A5%EB%AF%BC", {
@@ -24,6 +24,8 @@ const getGoals = async () => {
         });
 
         const content = await page.content();
+
+        console.log(content);
         // $에 cheerio를 로드한다.
         const $ = cheerio.load(content);
 
@@ -31,7 +33,7 @@ const getGoals = async () => {
             "#app > div > div._5DRQ6Phv.a5z6UHjy > article > div.aXXRCC8v > article > div.CVYBZp8c > div > div:nth-child(2) > div.LKVNbZff > div.hh9Bcdpt > div.Bk4No22F.SuHD5-eo > table > tbody > tr:nth-child(16) > td:nth-child(2) > div > strong"
         );
 
-        console.log(goals, goals.text());
+        console.log("골 수: ", goals.text());
 
         // // 페이지가 완전히 로드될 때까지 대기
         // await page.waitForSelector(
