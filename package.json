@@ -12,6 +12,7 @@
         "puppeteer": "22.12.1",
         "cheerio": "1.0.0-rc.12",
         "puppeteer-extra": "3.3.6",
-        "puppeteer-extra-plugin-stealth": "2.11.2"
+        "puppeteer-extra-plugin-stealth": "2.11.2",
+        "node-libcurl": "4.0.0"
     }
 }
