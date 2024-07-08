@@ -5,9 +5,7 @@ const cheerio = require("cheerio");
 
 const getGoals = async () => {
     try {
-        const browser = await puppeteer.launch({
-            headless: false,
-        });
+        const browser = await puppeteer.launch();
         const page = await browser.newPage();
 
         // 추가적인 HTTP 헤더 설정
@@ -16,8 +14,8 @@ const getGoals = async () => {
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
         });
 
-        // Set screen size
-        await page.setViewport({ width: 1920, height: 1080 });
+        // // Set screen size
+        // await page.setViewport({ width: 1920, height: 1080 });
 
         // 페이지 이동 및 대기
         await page.goto("https://namu.wiki/w/%EC%86%90%ED%9D%A5%EB%AF%BC", {
