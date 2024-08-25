@@ -89,7 +89,7 @@ const getGoals = async () => {
         await page.setViewport({ width: 1920, height: 1080 });
 
         // 페이지 이동 및 대기
-        await page.goto("https://ko.wikipedia.org/wiki/%EC%86%90%ED%9D%A5%EB%AF%BC", {
+        await page.goto("https://en.wikipedia.org/wiki/Son_Heung-min", {
             waitUntil: "domcontentloaded",
             timeout: 60000,
         });
@@ -101,7 +101,8 @@ const getGoals = async () => {
         const $ = cheerio.load(content);
 
         const goals = $(
-            "#mw-content-text > div.mw-content-ltr.mw-parser-output > table:nth-child(103) > tbody > tr:nth-child(22) > th:nth-child(15)"
+            // "#mw-content-text > div.mw-content-ltr.mw-parser-output > table:nth-child(103) > tbody > tr:nth-child(22) > th:nth-child(15)" 한국어 위키일경우
+            "#mw-content-text > div.mw-content-ltr.mw-parser-output > table:nth-child(108) > tbody > tr:nth-child(23) > th:nth-child(11)"
         );
 
         console.log("골 수: ", goals.text());
