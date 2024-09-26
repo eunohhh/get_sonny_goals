@@ -1,18 +1,17 @@
 {
     "name": "get_sonny_goals",
     "version": "1.0.0",
-    "description": "Get goals of Sonny from NamuWiki",
+    "description": "Script to get Son Heung-min's goal data",
     "main": "index.js",
     "scripts": {
-        "start": "node index.js"
+      "start": "node index.js"
     },
-    "author": "",
-    "license": "ISC",
     "dependencies": {
-        "puppeteer": "22.12.1",
-        "cheerio": "1.0.0-rc.12",
-        "puppeteer-extra": "3.3.6",
-        "puppeteer-extra-plugin-stealth": "2.11.2",
-        "node-libcurl": "4.0.0"
-    }
-}
+      "puppeteer": "^22.12.1",
+      "cheerio": "^1.0.0-rc.12",
+      "fs": "^0.0.1-security",
+      "path": "^0.12.7"
+    },
+    "author": "eunohhh",
+    "license": "ISC"
+  }
