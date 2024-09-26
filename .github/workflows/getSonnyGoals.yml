@@ -7,16 +7,16 @@ on:
 
 jobs:
     build:
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-22.04 # Ubuntu 버전을 22.04로 명시적으로 지정
 
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
 
             - name: Set up Node.js
-              uses: actions/setup-node@v4 # 버전을 v4로 업데이트
+              uses: actions/setup-node@v4
               with:
-                  node-version: "20" # 최신 버전 20 사용
+                  node-version: "20" # 필요한 Node.js 버전 지정
 
             - name: Install required system dependencies
               run: |
