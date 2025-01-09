@@ -34,7 +34,7 @@ const getGoals = async () => {
         // "#mw-content-text > div.mw-content-ltr.mw-parser-output > table:nth-child(103) > tbody > tr:nth-child(22) > th:nth-child(15)" 한국어 위키일경우
         // "#mw-content-text > div.mw-content-ltr.mw-parser-output > table:nth-child(108) > tbody > tr:nth-child(23) > th:nth-child(11)" 영어 위키일경우
         const goals = $(
-            "#mw-content-text > div.mw-content-ltr.mw-parser-output > table:nth-child(108) > tbody > tr:nth-child(23) > th:nth-child(11)"
+            "#mw-content-text > div.mw-content-ltr.mw-parser-output > table:nth-child(109) > tbody > tr:nth-child(23) > th:nth-child(11)"
         );
 
         console.log("골 수: ", goals.text());

@@ -2,7 +2,7 @@ name: Get Son Heung-min Goals
 
 on:
     schedule:
-        - cron: "0 */6 * * *" # 6시간마다 한 번씩 자동으로 워크플로우 실행
+        - cron: "0 */12 * * *" # 12시간마다 한 번씩 자동으로 워크플로우 실행
     workflow_dispatch: {} # 수동으로 워크플로우 트리거
 
 jobs:
