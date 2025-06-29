@@ -1,5 +1,4 @@
 const axios = require("axios");
-const { JSDOM } = require("jsdom");
 const fs = require("fs");
 const path = require("path");
 
@@ -8,7 +7,7 @@ const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const getGoals = async (retryCount = 0) => {
   try {
-    // 일반 Wikipedia 페이지 사용
+    // 일반 Wikipedia 페이지 사용 (API보다 제한이 덜 엄격)
     const response = await axios.get(
       "https://en.wikipedia.org/wiki/Son_Heung-min",
       {
@@ -26,64 +25,55 @@ const getGoals = async (retryCount = 0) => {
       }
     );
 
-    // JSDOM으로 HTML 파싱
-    const dom = new JSDOM(response.data);
-    const document = dom.window.document;
+    const htmlContent = response.data;
 
-    // 정확한 CSS 셀렉터 사용
-    // #mw-content-text > div.mw-content-ltr.mw-parser-output > table:nth-child(103) > tbody > tr:nth-child(23) > th:nth-child(11)
-    const goalsElement = document.querySelector(
-      "#mw-content-text > div.mw-content-ltr.mw-parser-output > table:nth-child(103) > tbody > tr:nth-child(23) > th:nth-child(11)"
-    );
-
+    // 정확한 셀렉터를 사용하여 골 수 찾기
     let goals = "0";
 
-    if (goalsElement) {
-      goals = goalsElement.textContent.trim();
-      console.log("정확한 셀렉터로 찾은 골 수: ", goals);
-    } else {
-      console.log(
-        "정확한 셀렉터로 요소를 찾을 수 없습니다. 대안 방법을 시도합니다..."
-      );
+    // 정확한 CSS 셀렉터에 해당하는 패턴
+    // #mw-content-text > div.mw-content-ltr.mw-parser-output > table:nth-child(103) > tbody > tr:nth-child(23) > th:nth-child(11)
 
-      // 대안: 모든 테이블에서 "Career total" 행 찾기
-      const tables = document.querySelectorAll("table.wikitable");
-      for (const table of tables) {
-        const rows = table.querySelectorAll("tr");
-        for (const row of rows) {
-          const cells = row.querySelectorAll("th, td");
-          for (const cell of cells) {
-            const text = cell.textContent.trim();
-            if (
-              text.toLowerCase().includes("career total") ||
-              text.toLowerCase().includes("total")
-            ) {
-              // 이 행에서 숫자 찾기
-              const numberCells = row.querySelectorAll("th, td");
-              for (let i = numberCells.length - 1; i >= 0; i--) {
-                const cellText = numberCells[i].textContent.trim();
-                if (/^\d+$/.test(cellText) && Number.parseInt(cellText) > 100) {
-                  goals = cellText;
-                  console.log("대안 방법으로 찾은 골 수: ", goals);
-                  break;
-                }
-              }
-              if (goals !== "0") break;
-            }
+    // 테이블들을 찾기
+    const tablePattern = /<table[^>]*class="wikitable"[^>]*>.*?<\/table>/gs;
+    const tables = htmlContent.match(tablePattern);
+
+    if (tables && tables.length >= 103) {
+      // 103번째 테이블 (nth-child(103))
+      const targetTable = tables[102]; // 0-based index
+
+      // 테이블 내의 행들을 찾기
+      const rowPattern = /<tr[^>]*>.*?<\/tr>/gs;
+      const rows = targetTable.match(rowPattern);
+
+      if (rows && rows.length >= 23) {
+        // 23번째 행 (nth-child(23))
+        const targetRow = rows[22]; // 0-based index
+
+        // 행 내의 셀들을 찾기
+        const cellPattern = /<t[dh][^>]*>.*?<\/t[dh]>/gs;
+        const cells = targetRow.match(cellPattern);
+
+        if (cells && cells.length >= 11) {
+          // 11번째 셀 (nth-child(11))
+          const targetCell = cells[10]; // 0-based index
+
+          // 셀 내용에서 숫자 추출
+          const numberPattern = /(\d+)/;
+          const match = targetCell.match(numberPattern);
+          if (match) {
+            goals = match[1];
           }
-          if (goals !== "0") break;
         }
-        if (goals !== "0") break;
       }
     }
 
-    console.log("최종 골 수: ", goals);
+    console.log("골 수: ", goals);
 
     const data = {
       player: "Son Heung-min",
       goals: goals,
       timestamp: new Date().toISOString(),
-      source: "Wikipedia Page (JSDOM + Exact Selector)",
+      source: "Wikipedia Page (Exact Selector)",
     };
 
     // 'goals' 폴더 생성 및 데이터 파일 저장

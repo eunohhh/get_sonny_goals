@@ -1,17 +1,17 @@
 {
-    "name": "get_sonny_goals",
-    "version": "1.0.0",
-    "description": "Script to get Son Heung-min's goal data",
-    "main": "index.js",
-    "scripts": {
-      "start": "node index.js"
-    },
-    "dependencies": {
-      "puppeteer": "^22.12.1",
-      "cheerio": "^1.0.0-rc.12",
-      "fs": "^0.0.1-security",
-      "path": "^0.12.7"
-    },
-    "author": "eunohhh",
-    "license": "ISC"
-  }
+  "name": "get_sonny_goals",
+  "version": "1.0.0",
+  "description": "Script to get Son Heung-min's goal data",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "jsdom": "^24.0.0",
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7"
+  },
+  "author": "eunohhh",
+  "license": "ISC"
+}
