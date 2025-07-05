@@ -77,7 +77,7 @@ const getGoals = async (retryCount = 0) => {
       }
     }
 
-    // 테스트용 코드
+    // 테스트용 코드 222
     console.log("최종 골 수: ", goals);
 
     const data = {
