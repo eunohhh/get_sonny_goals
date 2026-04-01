@@ -1,8 +1,6 @@
 name: Get Son Heung-min Goals
 
 on:
-  schedule:
-    - cron: "0 0 * * *" # 하루에 1번 실행 (자정)
   workflow_dispatch: {} # 수동으로 워크플로우 트리거
 
 jobs:

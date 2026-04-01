@@ -35,13 +35,22 @@ const getNamuGoals = async (): Promise<void> => {
   const browser = await chromium.launch({ headless: true });
 
   try {
-    const page = await browser.newPage();
+    const context = await browser.newContext({
+      userAgent:
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      viewport: { width: 1280, height: 720 },
+      locale: "ko-KR",
+    });
+    const page = await context.newPage();
     console.log("나무위키 페이지 접근 중...");
 
     await page.goto(NAMU_WIKI_URL, {
-      waitUntil: "domcontentloaded",
-      timeout: 30000,
+      waitUntil: "networkidle",
+      timeout: 60000,
     });
+
+    const title = await page.title();
+    console.log("페이지 타이틀:", title);
 
     const goals = await page.evaluate(() => {
       const strongElements = document.querySelectorAll("strong");
@@ -66,7 +75,11 @@ const getNamuGoals = async (): Promise<void> => {
       console.log("통산 득점:", goals);
       await saveGoalsData(Number(goals));
     } else {
+      const html = await page.content();
       console.error("통산 득점을 찾을 수 없습니다");
+      console.error("HTML 길이:", html.length);
+      console.error("HTML 미리보기 (처음 1000자):");
+      console.error(html.substring(0, 1000));
       process.exit(1);
     }
   } catch (error: unknown) {
