@@ -14,7 +14,14 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
 
 const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const saveGoalsData = async (goals: number): Promise<void> => {
+const MAX_FETCH_ATTEMPTS = 3;
+const RETRY_DELAYS_MS = [30_000, 60_000];
+
+const sleep = async (milliseconds: number): Promise<void> => {
+	await new Promise((resolve) => setTimeout(resolve, milliseconds));
+};
+
+const saveGoalsData = async (goals: number | null): Promise<void> => {
 	const { error } = await supabase.from("goals").insert({
 		goals,
 		name: "Son Heung-min",
@@ -31,7 +38,7 @@ const saveGoalsData = async (goals: number): Promise<void> => {
 	});
 };
 
-const getNamuGoals = async (): Promise<void> => {
+const getNamuGoals = async (): Promise<number> => {
 	const browser = await chromium.launch({ headless: true });
 
 	try {
@@ -51,6 +58,9 @@ const getNamuGoals = async (): Promise<void> => {
 
 		const title = await page.title();
 		console.log("페이지 타이틀:", title);
+		if (title === "Just a moment..." || title.toLowerCase().includes("cloudflare")) {
+			throw new Error(`나무위키 접근이 차단되었습니다 (페이지 타이틀: ${title})`);
+		}
 
 		const goals = await page.evaluate(() => {
 			const strongElements = document.querySelectorAll("strong");
@@ -71,24 +81,57 @@ const getNamuGoals = async (): Promise<void> => {
 			return null;
 		});
 
-		if (goals) {
-			console.log("통산 득점:", goals);
-			await saveGoalsData(Number(goals));
-		} else {
-			const html = await page.content();
-			console.error("통산 득점을 찾을 수 없습니다");
-			console.error("HTML 길이:", html.length);
-			console.error("HTML 미리보기 (처음 1000자):");
-			console.error(html.substring(0, 1000));
-			process.exit(1);
+		if (!goals) {
+			const htmlLength = (await page.content()).length;
+			throw new Error(`통산 득점을 찾을 수 없습니다 (HTML 길이: ${htmlLength})`);
 		}
-	} catch (error: unknown) {
-		const message = error instanceof Error ? error.message : "알 수 없는 에러";
-		console.error("에러 발생:", message);
-		process.exit(1);
+
+		return Number(goals);
 	} finally {
 		await browser.close();
 	}
 };
 
-void getNamuGoals();
+const fetchGoalsWithRetry = async (): Promise<number | null> => {
+	let lastError = "알 수 없는 에러";
+
+	for (let attempt = 1; attempt <= MAX_FETCH_ATTEMPTS; attempt += 1) {
+		try {
+			const goals = await getNamuGoals();
+			console.log(`통산 득점: ${goals}`);
+			return goals;
+		} catch (error: unknown) {
+			lastError = error instanceof Error ? error.message : String(error);
+			console.error(
+				`나무위키 조회 실패 (${attempt}/${MAX_FETCH_ATTEMPTS}): ${lastError}`,
+			);
+
+			if (attempt < MAX_FETCH_ATTEMPTS) {
+				const delay = RETRY_DELAYS_MS[attempt - 1];
+				console.log(`${delay / 1000}초 후 재시도합니다...`);
+				await sleep(delay);
+			}
+		}
+	}
+
+	console.error(
+		`최대 재시도 횟수를 초과했습니다. 마지막 오류: ${lastError}`,
+	);
+	return null;
+};
+
+const run = async (): Promise<void> => {
+	const goals = await fetchGoalsWithRetry();
+
+	if (goals === null) {
+		console.error("오늘의 골 수를 확인하지 못해 null로 기록합니다.");
+	}
+
+	await saveGoalsData(goals);
+};
+
+void run().catch((error: unknown) => {
+	const message = error instanceof Error ? error.message : String(error);
+	console.error(`오늘 기록 저장에 실패했습니다: ${message}`);
+	process.exitCode = 1;
+});
